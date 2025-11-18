@@ -19,6 +19,7 @@ import { DataviewManager } from "./api/api.dataview";
 import DiceProcessor from "./processor/processor";
 import copy from "fast-copy";
 import { compare } from "compare-versions";
+import { initI18n } from "./utils/i18n";
 
 export default class DiceRollerPlugin extends Plugin {
     api = API;
@@ -38,6 +39,8 @@ export default class DiceRollerPlugin extends Plugin {
         };
     }
     async onload() {
+        initI18n();
+
         await this.loadSettings();
         console.log(`DiceRoller v${this.data.version} loaded`);
 
