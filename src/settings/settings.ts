@@ -19,6 +19,7 @@ import { type DiceIcon, IconManager, IconShapes } from "src/view/view.icons";
 import { generateSlug } from "random-word-slugs";
 import { FontSuggestionModal } from "src/suggester/fonts";
 import { FolderInputSuggest } from "@javalent/utilities";
+import { t } from "src/utils/i18n";
 import { Icons } from "src/utils/icons";
 import { Lexer } from "src/lexer/lexer";
 import { ButtonPosition } from "./settings.types";
@@ -159,11 +160,11 @@ export default class SettingTab extends PluginSettingTab {
     }
     buildDisplay(containerEl: HTMLDetailsElement) {
         containerEl.empty();
-        this.#buildSummary(containerEl, "Dice Display");
+        this.#buildSummary(containerEl, t("Dice Display"));
         new Setting(containerEl)
-            .setName("Display Formula With Results")
+            .setName(t("Display Formula With Results"))
             .setDesc(
-                "Both the formula and the results will both be displayed in preview mode."
+                t("Both the formula and the results will both be displayed in preview mode.")
             )
             .addToggle((t) => {
                 t.setValue(this.plugin.data.displayResultsInline);
@@ -174,12 +175,12 @@ export default class SettingTab extends PluginSettingTab {
             });
 
         new Setting(containerEl)
-            .setName("Re-roll button position")
-            .setDesc("Controls position of the re-roll button")
+            .setName(t("Re-roll Button Position"))
+            .setDesc(t("Controls position of the re-roll button."))
             .addDropdown((d) => {
-                d.addOption(ButtonPosition.LEFT, "Left");
-                d.addOption(ButtonPosition.RIGHT, "Right");
-                d.addOption(ButtonPosition.NONE, "None");
+                d.addOption(ButtonPosition.LEFT, t("Left"));
+                d.addOption(ButtonPosition.RIGHT, t("Right"));
+                d.addOption(ButtonPosition.NONE, t("None"));
                 d.setValue(this.plugin.data.position);
                 d.onChange(async (v) => {
                     this.plugin.data.position = v as ButtonPosition;
@@ -187,14 +188,14 @@ export default class SettingTab extends PluginSettingTab {
                 });
             });
         new Setting(containerEl)
-            .setName("Display Formula in Parentheses After")
+            .setName(t("Display Formula in Parentheses After"))
             .setDesc(
                 createFragment((e) => {
                     e.createSpan({
-                        text: "For example,  "
+                        text: t("For example,  ")
                     });
                     e.createEl("code", { text: "`dice: 1d6`" });
-                    e.createSpan({ text: " will become " });
+                    e.createSpan({ text: t(" will become ") });
                     const parent = e.createSpan("dice-roller");
                     parent.createSpan({ cls: "dice-roller-result", text: "3" });
                     setIcon(
@@ -202,7 +203,7 @@ export default class SettingTab extends PluginSettingTab {
                         Icons.DICE
                     );
                     e.createSpan({
-                        text: " (1d6). This only affects Dice Rollers."
+                        text: t(" (1d6). This only affects Dice Rollers.")
                     });
                 })
             )
@@ -216,27 +217,30 @@ export default class SettingTab extends PluginSettingTab {
     }
     buildDice(containerEl: HTMLDetailsElement) {
         containerEl.empty();
-        this.#buildSummary(containerEl, "Dice Rollers");
+        this.#buildSummary(containerEl, t("Dice Rollers"));
         new Setting(containerEl)
-            .setName("Default Face")
-            .setDesc("Use this as the number of faces when it is omitted.")
-            .addText((t) => {
-                t.setValue(`${this.plugin.data.defaultFace}`);
-                t.inputEl.onblur = async () => {
-                    if (isNaN(Number(t.inputEl.value))) {
-                        new Notice("The default face must be a number.");
+            .setName(t("Default Face"))
+            .setDesc(t("Use this as the number of faces when it is omitted."))
+            .addText((x) => {
+                x.setValue(`${this.plugin.data.defaultFace}`);
+                x.inputEl.onblur = async () => {
+                    if (isNaN(Number(x.inputEl.value))) {
+                        new Notice(t("The default face must be a number."));
                     }
 
-                    this.plugin.data.defaultFace = Number(t.inputEl.value);
+                    this.plugin.data.defaultFace = Number(x.inputEl.value);
                     Lexer.setDefaultFace(this.plugin.data.defaultFace);
                     await this.plugin.saveSettings();
                 };
             });
         new Setting(containerEl)
-            .setName("Round Results")
-            .setDesc("Determine the rounding behavior for dice results.")
+            .setName(t("Round Results"))
+            .setDesc(t("Determine the rounding behavior for dice results."))
             .addDropdown((d) => {
-                d.addOptions(Round)
+                d.addOption(Round.None, t("None"))
+                    .addOption(Round.Normal, t("Normal"))
+                    .addOption(Round.Up, t("Up"))
+                    .addOption(Round.Down, t("Down"))
                     .setValue(this.plugin.data.round)
                     .onChange((v: Round) => {
                         this.plugin.data.round = v;
@@ -244,13 +248,13 @@ export default class SettingTab extends PluginSettingTab {
                     });
             });
         new Setting(containerEl)
-            .setName("Auto Roll dice")
+            .setName(t("Auto Roll dice"))
             .setDesc(
-                "On initial display, should dice be rolled or displayed empty."
+                t("On initial display, should dice be rolled or displayed empty.")
             )
             .addDropdown((d) => {
-                d.addOption(ExpectedValue.None, "Empty")
-                    .addOption(ExpectedValue.Roll, "Rolled")
+                d.addOption(ExpectedValue.None, t("Empty"))
+                    .addOption(ExpectedValue.Roll, t("Rolled"))
                     .setValue(this.plugin.data.initialDisplay)
                     .onChange((v: ExpectedValue) => {
                         this.plugin.data.initialDisplay = v;
@@ -258,9 +262,9 @@ export default class SettingTab extends PluginSettingTab {
                     });
             });
         new Setting(containerEl)
-            .setName("Show Signed Results")
+            .setName(t("Show Signed Results"))
             .setDesc(
-                "Positive results will show a '+'. This setting has no effect on negative results."
+                t("Positive results will show a '+'. This setting has no effect on negative results.")
             )
             .addToggle((d) => {
                 d.setValue(this.plugin.data.signed).onChange((v: boolean) => {
@@ -269,14 +273,14 @@ export default class SettingTab extends PluginSettingTab {
                 });
             });
         new Setting(containerEl)
-            .setName("Always Render Dice")
+            .setName(t("Always Render Dice"))
             .setDesc(
                 createFragment((e) => {
                     e.createSpan({
-                        text: "Dice rolled in notes will always be rendered. Use the "
+                        text: t("Dice rolled in notes will always be rendered. Use the ")
                     });
                     e.createEl("code", { text: "|norender" });
-                    e.createSpan({ text: " flag to prevent it." });
+                    e.createSpan({ text: t(" flag to prevent it.") });
                 })
             )
             .addToggle((t) => {
@@ -286,11 +290,11 @@ export default class SettingTab extends PluginSettingTab {
                 });
             });
         new Setting(containerEl)
-            .setName("Log All Rolls to Dice Tray")
+            .setName(t("Log All Rolls to Dice Tray"))
             .setDesc(
                 createFragment((e) => {
                     e.createSpan({
-                        text: "Dice rolled in notes will be added to the Dice Tray's Results section."
+                        text: t("Dice rolled in notes will be added to the Dice Tray's Results section.")
                     });
                 })
             )
@@ -303,12 +307,12 @@ export default class SettingTab extends PluginSettingTab {
     }
     buildTables(containerEl: HTMLDetailsElement) {
         containerEl.empty();
-        this.#buildSummary(containerEl, "Table Rollers");
+        this.#buildSummary(containerEl, t("Table Rollers"));
 
         new Setting(containerEl)
-            .setName("Display Lookup Table Roll")
+            .setName(t("Display Lookup Table Roll"))
             .setDesc(
-                "Lookup table rolls will display the rolled number along with the result."
+                t("Lookup table rolls will display the rolled number along with the result.")
             )
             .addToggle((t) => {
                 t.setValue(this.plugin.data.displayLookupRoll);
@@ -320,12 +324,12 @@ export default class SettingTab extends PluginSettingTab {
     }
     buildSections(containerEl: HTMLDetailsElement) {
         containerEl.empty();
-        this.#buildSummary(containerEl, "Section Rollers");
+        this.#buildSummary(containerEl, t("Section Rollers"));
 
         new Setting(containerEl)
-            .setName("Add Copy Button to Section Results")
+            .setName(t("Add Copy Button to Section Results"))
             .setDesc(
-                "Randomly rolled sections will have a copy-content button to easy add result to clipboard."
+                t("Randomly rolled sections will have a copy-content button to easy add result to clipboard.")
             )
             .addToggle((t) => {
                 t.setValue(this.plugin.data.copyContentButton);
@@ -335,9 +339,9 @@ export default class SettingTab extends PluginSettingTab {
                 });
             });
         new Setting(containerEl)
-            .setName("Display As Embeds")
+            .setName(t("Display As Embeds"))
             .setDesc(
-                "Sections returned from Section & Tag Rollers will display as embedded fields."
+                t("Sections returned from Section & Tag Rollers will display as embedded fields.")
             )
             .addToggle((t) => {
                 t.setValue(this.plugin.data.displayAsEmbed);
@@ -349,12 +353,12 @@ export default class SettingTab extends PluginSettingTab {
     }
     buildTags(containerEl: HTMLDetailsElement) {
         containerEl.empty();
-        this.#buildSummary(containerEl, "Tag Rollers");
+        this.#buildSummary(containerEl, t("Tag Rollers"));
 
         new Setting(containerEl)
-            .setName("Always Return Links for Tags")
+            .setName(t("Always Return Links for Tags"))
             .setDesc(
-                "Enables random link rolling with the link parameter. Override by specifying a section type."
+                t("Enables random link rolling with the link parameter. Override by specifying a section type.")
             )
             .addToggle((t) => {
                 t.setValue(this.plugin.data.rollLinksForTags);
@@ -366,15 +370,15 @@ export default class SettingTab extends PluginSettingTab {
     }
     buildNarrative(containerEl: HTMLDetailsElement) {
         containerEl.empty();
-        this.#buildSummary(containerEl, "Narrative Rollers");
+        this.#buildSummary(containerEl, t("Narrative Rollers"));
     
         // Dropdown for selecting the symbol set (Genesys or SWRPG)
         new Setting(containerEl)
-            .setName("Symbol Set")
-            .setDesc("Select between Genesys or SWRPG symbols.")
+            .setName(t("Symbol Set"))
+            .setDesc(t("Select between Genesys or SWRPG symbols."))
             .addDropdown((dropdown) => {
-                dropdown.addOption("Genesys", "Genesys");
-                dropdown.addOption("SWRPG", "SWRPG");
+                dropdown.addOption("Genesys", t("Genesys"));
+                dropdown.addOption("SWRPG", t("SWRPG"));
                 dropdown.setValue(this.plugin.data.narrativeSymbolSet);
                 dropdown.onChange(async (value) => {
                     this.plugin.data.narrativeSymbolSet = value;
@@ -385,8 +389,8 @@ export default class SettingTab extends PluginSettingTab {
     
         // Toggle for displaying as text or symbols
         new Setting(containerEl)
-            .setName("Display Results as Symbols")
-            .setDesc("Toggle between text and symbol results.")
+            .setName(t("Display Results as Symbols"))
+            .setDesc(t("Toggle between text and symbol results."))
             .addToggle((toggle) => {
                 toggle.setValue(this.plugin.data.displayAsSymbols);
                 toggle.onChange(async (value) => {
@@ -398,12 +402,12 @@ export default class SettingTab extends PluginSettingTab {
     
     buildView(containerEl: HTMLDetailsElement) {
         containerEl.empty();
-        this.#buildSummary(containerEl, "Dice Tray");
+        this.#buildSummary(containerEl, t("Dice Tray"));
 
         new Setting(containerEl)
-            .setName("Open Dice Tray on Startup")
+            .setName(t("Open Dice Tray on Startup"))
             .setDesc(
-                "The dice view can always be opened using the command from the command palette."
+                t("The dice view can always be opened using the command from the command palette.")
             )
             .addToggle((t) => {
                 t.setValue(this.plugin.data.showLeafOnStartup);
@@ -414,9 +418,9 @@ export default class SettingTab extends PluginSettingTab {
             });
 
         new Setting(containerEl)
-            .setName("Dice Tray Buttons")
+            .setName(t("Dice Tray Buttons"))
             .setDesc(
-                "Add and remove the buttons available in the Dice Tray here, to customize what quick-actions are available to roll."
+                t("Add and remove the buttons available in the Dice Tray here, to customize what quick-actions are available to roll.")
             );
 
         this.iconsEl = containerEl.createDiv("dice-icons");
@@ -427,7 +431,7 @@ export default class SettingTab extends PluginSettingTab {
         if (!this.plugin.data.icons) {
             this.iconsEl.createSpan({
                 cls: "no-icons",
-                text: "No dice buttons created! Create a button to use this functionality."
+                text: t("No dice buttons created! Create a button to use this functionality.")
             });
             return;
         }
@@ -450,13 +454,13 @@ export default class SettingTab extends PluginSettingTab {
         };
         const dropEl = addEl.createDiv("shape");
         const formulaEl = addEl.createDiv("formula");
-        new TextComponent(formulaEl).setPlaceholder("Formula").onChange((v) => {
+        new TextComponent(formulaEl).setPlaceholder(t("Formula")).onChange((v) => {
             toAdd.formula = v;
             button.setDisabled(
                 toAdd.text?.length === 0 || toAdd.formula?.length === 0
             );
         });
-        new TextComponent(formulaEl).setPlaceholder("Display").onChange((v) => {
+        new TextComponent(formulaEl).setPlaceholder(t("Display")).onChange((v) => {
             toAdd.text = v;
             button.setDisabled(
                 toAdd.text?.length === 0 || toAdd.formula?.length === 0
@@ -519,7 +523,7 @@ export default class SettingTab extends PluginSettingTab {
         const dropEl = rowEl.createDiv("shape");
         const formulaEl = rowEl.createDiv("formula");
         new TextComponent(formulaEl)
-            .setPlaceholder("Formula")
+            .setPlaceholder(t("Formula"))
             .setValue(toAdd.formula)
             .onChange((v) => {
                 toAdd.formula = v;
@@ -528,7 +532,7 @@ export default class SettingTab extends PluginSettingTab {
                 );
             });
         new TextComponent(formulaEl)
-            .setPlaceholder("Display")
+            .setPlaceholder(t("Display"))
             .setValue(toAdd.text)
             .onChange((v) => {
                 toAdd.text = v;
@@ -563,11 +567,11 @@ export default class SettingTab extends PluginSettingTab {
     }
     buildRender(containerEl: HTMLDetailsElement) {
         containerEl.empty();
-        this.#buildSummary(containerEl, "Graphical Dice");
+        this.#buildSummary(containerEl, t("Graphical Dice"));
 
         new Setting(containerEl)
-            .setName("Display graphics for Dice Tray Rolls")
-            .setDesc("Dice rolls from dice view will be displayed on screen.")
+            .setName(t("Display graphics for Dice Tray Rolls"))
+            .setDesc(t("Dice rolls from dice view will be displayed on screen."))
             .addToggle((t) => {
                 t.setValue(this.plugin.data.renderer);
                 t.onChange(async (v) => {
@@ -576,21 +580,21 @@ export default class SettingTab extends PluginSettingTab {
                 });
             });
         new Setting(containerEl)
-            .setName("Display Time for Dice Graphics")
+            .setName(t("Display Time for Dice Graphics"))
             .setDesc(
-                "Rendered dice will stay on screen for this number of milliseconds. Leave blank to require a click to clear dice."
+                t("Rendered dice will stay on screen for this number of milliseconds. Leave blank to require a click to clear dice.")
             )
-            .addText((t) => {
-                t.inputEl.setAttr("type", "number");
-                t.inputEl.onblur = (ev) => {
-                    if (Number(t.getValue()) < 0) {
-                        new Notice("Render time cannot be less than 0.");
-                        t.setValue(`0`);
+            .addText((x) => {
+                x.inputEl.setAttr("type", "number");
+                x.inputEl.onblur = (ev) => {
+                    if (Number(x.getValue()) < 0) {
+                        new Notice(t("Render time cannot be less than 0."));
+                        x.setValue(`0`);
                     }
                 };
 
-                t.setValue(`${this.plugin.data.renderTime}`);
-                t.onChange(async (v) => {
+                x.setValue(`${this.plugin.data.renderTime}`);
+                x.onChange(async (v) => {
                     if ((v && Number(v) < 0) || isNaN(Number(v))) return;
                     this.plugin.data.renderTime = Number(v);
                     DiceRenderer.setData(this.plugin.getRendererData());
@@ -599,7 +603,7 @@ export default class SettingTab extends PluginSettingTab {
             })
             .addExtraButton((b) => {
                 b.setIcon(Icons.RESET)
-                    .setTooltip("Reset to Default")
+                    .setTooltip(t("Reset to Default"))
                     .onClick(async () => {
                         this.plugin.data.renderTime =
                             DEFAULT_SETTINGS.renderTime;
@@ -609,9 +613,9 @@ export default class SettingTab extends PluginSettingTab {
             });
 
         new Setting(containerEl)
-            .setName("Use Colorful Dice")
+            .setName(t("Use Colorful Dice"))
             .setDesc(
-                "Rendered dice will be varied colors based on the dice type. This will override manually set dice and text colors."
+                t("Rendered dice will be varied colors based on the dice type. This will override manually set dice and text colors.")
             )
             .addToggle((t) => {
                 t.setValue(this.plugin.data.colorfulDice);
@@ -622,8 +626,8 @@ export default class SettingTab extends PluginSettingTab {
                 });
             });
         new Setting(containerEl)
-            .setName("Adjust Dice Scale")
-            .setDesc("Control the size of rendered dice.")
+            .setName(t("Adjust Dice Scale"))
+            .setDesc(t("Control the size of rendered dice."))
             .addSlider((s) => {
                 s.setLimits(0.5, 1.5, 0.1)
                     .setValue(this.plugin.data.scaler)
@@ -634,8 +638,8 @@ export default class SettingTab extends PluginSettingTab {
                     });
             });
         new Setting(containerEl)
-            .setName("Font for dice")
-            .setDesc("Select the font to use for the dice")
+            .setName(t("Font for dice"))
+            .setDesc(t("Select the font to use for the dice."))
             .addText(async (t) => {
                 const set = async () => {
                     this.plugin.data.textFont = t.getValue();
@@ -657,8 +661,8 @@ export default class SettingTab extends PluginSettingTab {
                 };
             });
         const diceColor = new Setting(containerEl)
-            .setName("Dice Base Color")
-            .setDesc("Rendered dice will be this color.");
+            .setName(t("Dice Base Color"))
+            .setDesc(t("Rendered dice will be this color."));
         diceColor.controlEl.createEl(
             "input",
             {
@@ -679,8 +683,8 @@ export default class SettingTab extends PluginSettingTab {
         );
 
         const textColor = new Setting(containerEl)
-            .setName("Dice Text Color")
-            .setDesc("Rendered dice will use this color for their numbers.");
+            .setName(t("Dice Text Color"))
+            .setDesc(t("Rendered dice will use this color for their numbers."));
         textColor.controlEl.createEl(
             "input",
             {
@@ -701,15 +705,15 @@ export default class SettingTab extends PluginSettingTab {
         );
 
         new Setting(containerEl)
-            .setName("Show Notice for Results")
+            .setName(t("Show Notice for Results"))
             .setDesc(
                 createFragment((e) => {
                     e.createSpan({
-                        text: "A notice will be displayed for each rendered dice roll."
+                        text: t("A notice will be displayed for each rendered dice roll.")
                     });
                     e.createEl("br");
                     e.createSpan({
-                        text: "Changing this setting will not effect any existing dice rollers in opened notes."
+                        text: t("Changing this setting will not effect any existing dice rollers in opened notes.")
                     });
                 })
             )
@@ -725,18 +729,18 @@ export default class SettingTab extends PluginSettingTab {
 
     buildFormulaSettings(containerEl: HTMLDetailsElement) {
         containerEl.empty();
-        this.#buildSummary(containerEl, "Saved Formulas");
+        this.#buildSummary(containerEl, t("Saved Formulas"));
         const settingEl = containerEl.createDiv(
             "dice-roller-setting-additional-container"
         );
 
         const addNew = settingEl.createDiv();
         new Setting(addNew)
-            .setName("Add Formula")
-            .setDesc("Add a new formula shortcut.")
+            .setName(t("Add Formula"))
+            .setDesc(t("Add a new formula shortcut."))
             .addButton((button: ButtonComponent): ButtonComponent => {
                 let b = button
-                    .setTooltip("Add Formula")
+                    .setTooltip(t("Add Formula"))
                     .setButtonText("+")
                     .onClick(async () => {
                         const formula = await this.buildFormulaForm(addNew);
@@ -763,7 +767,7 @@ export default class SettingTab extends PluginSettingTab {
                 .addExtraButton((b) =>
                     b
                         .setIcon(Icons.EDIT)
-                        .setTooltip("Edit")
+                        .setTooltip(t("Edit"))
                         .onClick(async () => {
                             const edited = await this.buildFormulaForm(addNew, {
                                 alias,
@@ -782,7 +786,7 @@ export default class SettingTab extends PluginSettingTab {
                 .addExtraButton((b) =>
                     b
                         .setIcon(Icons.DELETE)
-                        .setTooltip("Delete")
+                        .setTooltip(t("Delete"))
                         .onClick(async () => {
                             delete this.plugin.data.formulas[alias];
                             await this.plugin.saveSettings();
@@ -792,7 +796,7 @@ export default class SettingTab extends PluginSettingTab {
         }
         if (!Object.values(formulas).length) {
             additional.createSpan({
-                text: "Create a formula to see it here!",
+                text: t("Create a formula to see it here!"),
                 cls: "no-formulas"
             });
         }
@@ -808,10 +812,10 @@ export default class SettingTab extends PluginSettingTab {
             const formulaEl = el.createDiv("add-new-formula");
             const dataEl = formulaEl.createDiv("formula-data");
 
-            new Setting(dataEl).setName("Alias").addText((t) => {
+            new Setting(dataEl).setName(t("Alias")).addText((t) => {
                 t.setValue(temp.alias).onChange((v) => (temp.alias = v));
             });
-            new Setting(dataEl).setName("Formula").addText((t) => {
+            new Setting(dataEl).setName(t("Formula")).addText((t) => {
                 t.setValue(temp.formula).onChange((v) => (temp.formula = v));
             });
 
@@ -820,7 +824,7 @@ export default class SettingTab extends PluginSettingTab {
                 .addButton((b) =>
                     b
                         .setCta()
-                        .setButtonText("Save")
+                        .setButtonText(t("Save"))
                         .onClick(async () => {
                             formulaEl.detach();
                             resolve(temp);
@@ -829,7 +833,7 @@ export default class SettingTab extends PluginSettingTab {
                 .addExtraButton((b) =>
                     b
                         .setIcon(Icons.CANCEL)
-                        .setTooltip("Cancel")
+                        .setTooltip(t("Cancel"))
                         .onClick(() => {
                             formulaEl.detach();
                             resolve(null);
@@ -844,21 +848,21 @@ export default class SettingTab extends PluginSettingTab {
     folders: TFolder[] = [];
     buildDiceModTemplateFoldersSettings(containerEl: HTMLDetailsElement) {
         containerEl.empty();
-        this.#buildSummary(containerEl, "Modify Dice");
+        this.#buildSummary(containerEl, t("Modify Dice"));
         new Setting(containerEl)
             .setName(
                 createFragment((e) => {
-                    e.createSpan({ text: "Apply " });
+                    e.createSpan({ text: t("Apply ") });
                     e.createEl("code", { text: "dice-mod" });
-                    e.createSpan({ text: " in live-preview" });
+                    e.createSpan({ text: t(" in live-preview") });
                 })
             )
             .setDesc(
                 createFragment((e) => {
-                    e.createSpan({ text: "If not enabled " });
+                    e.createSpan({ text: t("If not enabled ") });
                     e.createEl("code", { text: "dice-mod" });
                     e.createSpan({
-                        text: " will only be applied/replaced in read mode."
+                        text: t(" will only be applied/replaced in read mode.")
                     });
                 })
             )
@@ -870,11 +874,11 @@ export default class SettingTab extends PluginSettingTab {
                 });
             });
         new Setting(containerEl)
-            .setName("Escape Markdown When Modifying")
+            .setName(t("Escape Markdown When Modifying"))
             .setDesc(
                 createFragment((e) => {
                     e.createSpan({
-                        text: "Markdown characters will be escaped when using "
+                        text: t("Markdown characters will be escaped when using ")
                     });
                     e.createEl("code", { text: "dice-mod" });
                     e.createSpan({ text: "." });
@@ -888,11 +892,11 @@ export default class SettingTab extends PluginSettingTab {
                 });
             });
         new Setting(containerEl)
-            .setName("Add Formula When Using Modify Dice")
+            .setName(t("Add Formula When Using Modify Dice"))
             .setDesc(
                 createFragment((e) => {
                     e.createSpan({
-                        text: "Both the formula and the results will both be added to the note when using "
+                        text: t("Both the formula and the results will both be added to the note when using ")
                     });
                     e.createEl("code", { text: "dice-mod" });
                     e.createSpan({ text: "." });
@@ -932,13 +936,13 @@ export default class SettingTab extends PluginSettingTab {
         this.pathsEl.empty();
 
         new Setting(this.pathsEl)
-            .setName("Template Folders")
+            .setName(t("Template Folders"))
             .setDesc(
                 createFragment((e) => {
-                    e.createSpan({ text: "Define folders where " });
+                    e.createSpan({ text: t("Define folders where ") });
                     e.createEl("code", { text: "dice-mod" });
                     e.createSpan({
-                        text: " is not applied/replaced and can be used in templates."
+                        text: t(" is not applied/replaced and can be used in templates.")
                     });
                 })
             )
@@ -963,10 +967,10 @@ export default class SettingTab extends PluginSettingTab {
                 });
                 if (useSubfolders) {
                     setIcon(container, Icons.SUBFOLDER);
-                    container.createSpan({ text: "Includes Subfolders" });
+                    container.createSpan({ text: t("Includes Subfolders") });
                 } else {
                     setIcon(container, Icons.PARENT_FOLDER);
-                    container.createSpan({ text: "Root Only" });
+                    container.createSpan({ text: t("Root Only") });
                 }
             })
         );
@@ -999,18 +1003,18 @@ export default class SettingTab extends PluginSettingTab {
         const sub = new ExtraButtonComponent(input).onClick(() => {
             temp.useSubfolders = !temp.useSubfolders;
             if (temp.useSubfolders) {
-                sub.setIcon(Icons.SUBFOLDER).setTooltip("Including Subfolders");
+                sub.setIcon(Icons.SUBFOLDER).setTooltip(t("Including Subfolders"));
             } else {
                 sub.setIcon(Icons.PARENT_FOLDER).setTooltip(
-                    "Not Including Subfolders"
+                    t("Not Including Subfolders")
                 );
             }
         });
         if (this.plugin.data.diceModTemplateFolders[folder] ?? true) {
-            sub.setIcon(Icons.SUBFOLDER).setTooltip("Including Subfolders");
+            sub.setIcon(Icons.SUBFOLDER).setTooltip(t("Including Subfolders"));
         } else {
             sub.setIcon(Icons.PARENT_FOLDER).setTooltip(
-                "Not Including Subfolders"
+                t("Not Including Subfolders")
             );
         }
         const actions = editEl.createDiv("actions");
@@ -1053,7 +1057,7 @@ export default class SettingTab extends PluginSettingTab {
         inputEl: HTMLElement,
         addButton: ExtraButtonComponent,
         callback: (path: string) => void,
-        originalPath: string = "Folder"
+        originalPath: string = t("Folder")
     ) {
         const validateAndSend = (path: string) => {
             if (
