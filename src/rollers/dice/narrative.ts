@@ -4,6 +4,7 @@ import { RenderTypes } from "./renderable";
 import type { App } from "obsidian";
 import type { LexicalToken } from "src/lexer/lexer";
 import type { DiceRollerSettings } from "src/settings/settings.types";
+import { t } from "src/utils/i18n";
 
 interface NarrativeResult {
     success: number; //negative => failure
@@ -372,15 +373,15 @@ export class NarrativeStackRoller extends RenderableRoller<NarrativeResult> {
             map.light += die.light;
             map.dark += die.dark
         }
-        return `**Totals**
-Successes: ${map.success}
-Failures: ${map.failure}
-Advantages: ${map.advantage}
-Threats: ${map.threat}
-Triumphs: ${map.triumph}
-Despairs: ${map.despair}
-${map.light > 0 ? `Light Side: ${map.light}` : ''}
-${map.dark > 0 ? `Dark Side: ${map.dark}` : ''}`;
+        return `**${t("Totals")}**
+${t("Successes:")} ${map.success}
+${t("Failures:")} ${map.failure}
+${t("Advantages:")} ${map.advantage}
+${t("Threats:")} ${map.threat}
+${t("Triumphs:")} ${map.triumph}
+${t("Despairs:")} ${map.despair}
+${map.light > 0 ? `${t("Light Side:")} ${map.light}` : ''}
+${map.dark > 0 ? `${t("Dark Side:")} ${map.dark}` : ''}`;
     }
     private formatSymbol(text: string, fontFamily: string): string {
         return `<span style="font-family: ${fontFamily}; font-weight: normal;">${text}</span>`;
@@ -389,7 +390,7 @@ ${map.dark > 0 ? `Dark Side: ${map.dark}` : ''}`;
         const display = []; this.data.narrativeSymbolSet
         if (this.data.displayAsSymbols) {
             if (this.result.success === 0) {
-                display.push(`Wash`);
+                display.push(`${t("Wash")}`);
             } else if (this.result.success > 0) {
                 display.push(`${this.result.success} `+ this.formatSymbol('s', this.data.narrativeSymbolSet));
             } else if (this.result.success < 0) {
@@ -414,27 +415,27 @@ ${map.dark > 0 ? `Dark Side: ${map.dark}` : ''}`;
             return display.join(", ");
         } else {
             if (this.result.success === 0) {
-                display.push(`Wash`);
+                display.push(`${t("Wash")}`);
             } else if (this.result.success > 0) {
-                display.push(`${this.result.success} success`);
+                display.push(`${this.result.success} ${t("success")}`);
             } else if (this.result.success < 0) {
-                display.push(`${Math.abs(this.result.success)} failure`);
+                display.push(`${Math.abs(this.result.success)} ${t("failure")}`);
             }
             if (this.result.advantage > 0) {
-                display.push(`${this.result.advantage} advantage`);
+                display.push(`${this.result.advantage} ${t("advantage")}`);
             } else if (this.result.advantage < 0) {
-                display.push(`${Math.abs(this.result.advantage)} threat`);
+                display.push(`${Math.abs(this.result.advantage)} ${t("threat")}`);
             }
             if (this.result.triumph > 0) {
-                display.push(`${this.result.triumph} triumph`);
+                display.push(`${this.result.triumph} ${t("triumph")}`);
             } else if (this.result.despair > 0) {
-                display.push(`${Math.abs(this.result.despair)} despair`);
+                display.push(`${Math.abs(this.result.despair)} ${t("despair")}`);
             }
             if (this.result.light > 0) {
-                display.push(`${this.result.light} light side`);
+                display.push(`${this.result.light} ${t("light side")}`);
             }
             if (this.result.dark > 0) {
-                display.push(`${this.result.dark} dark side`);
+                display.push(`${this.result.dark} ${t("dark side")}`);
             }
             return display.join(", ");
         }
@@ -487,7 +488,7 @@ ${map.dark > 0 ? `Dark Side: ${map.dark}` : ''}`;
         super.onload();
     }
     getReplacer(): Promise<string> {
-        throw new Error("Method not implemented.");
+        throw new Error(t("Method not implemented."));
     }
     result: NarrativeResult;
     async roll(render?: boolean): Promise<NarrativeResult> {
