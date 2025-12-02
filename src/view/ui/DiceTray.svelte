@@ -4,6 +4,7 @@
 
     import { ExtraButtonComponent } from "obsidian";
     import { Icons } from "src/utils/icons";
+    import { t } from "src/utils/i18n";
     import { createEventDispatcher } from "svelte";
     import type DiceRollerPlugin from "src/main";
     import type DiceView from "../view";
@@ -21,7 +22,7 @@
 </script>
 
 {#if settings.customFormulas.length}
-    <Details name="Saved Formulas" open={false}>
+    <Details name="{t("Saved Formulas")}" open={false}>
         <div class="saved-formulas">
             {#each settings.customFormulas as formula (formula)}
                 <div class="formula-container">
