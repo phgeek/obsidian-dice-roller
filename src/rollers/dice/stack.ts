@@ -6,6 +6,7 @@ import {
     type DiceRollerSettings
 } from "src/settings/settings.types";
 import { ExpectedValue, Round } from "src/types/api";
+import { t } from "src/utils/i18n";
 import { Roller, RenderableRoller } from "../roller";
 import { DiceRoller } from "./dice";
 import { PercentRoller } from "./percentage";
@@ -43,7 +44,7 @@ export class BasicStackRoller extends Roller<number> {
         final.rollSync();
         if (final instanceof StuntRoller) {
             if (final.doubles) {
-                this.stunted = ` - ${final.results.get(0).value} Stunt Points`;
+                this.stunted = ` - ${final.results.get(0).value} ${t("Stunt Points")}`;
             }
         }
         this.result = final.result;
@@ -67,7 +68,7 @@ export class BasicStackRoller extends Roller<number> {
                         if (b.doubles) {
                             this.stunted = ` - ${
                                 b.results.get(0).value
-                            } Stunt Points`;
+                            } ${t("Stunt Points")}`;
                         }
                     }
 
@@ -76,7 +77,7 @@ export class BasicStackRoller extends Roller<number> {
                         if (a.doubles) {
                             this.stunted = ` - ${
                                 a.results.get(0).value
-                            } Stunt Points`;
+                            } ${t("Stunt Points")}`;
                         }
                     }
                     const result = this.operators[dice.value](
@@ -299,12 +300,12 @@ export class StackRoller extends RenderableRoller<number> {
         }
         if (this.expectedValue === ExpectedValue.Average) {
             if (this.displayFixedText) {
-                return `${this.original}\n${this.result} = average: ${display}`;
+                return `${this.original}\n${this.result} = ${t("average:")} ${display}`;
             }
-            return `${this.original}\naverage: ${display}`;
+            return `${this.original}\n${t("average:")} ${display}`;
         }
 
-        return `${this.original}\nempty`;
+        return `${this.original}\n${t("empty")}`;
     }
     allowAverage(): boolean {
         return this.dynamic.every((roller: DiceRoller) =>
@@ -657,7 +658,7 @@ export class StackRoller extends RenderableRoller<number> {
             this.showRenderNotice &&
             (render || (this.shouldRender && this.hasRunOnce))
         ) {
-            new Notice(`${this.getTooltip()}\n\nResult: ${this.result}`);
+            new Notice(`${this.getTooltip()}\n\n${t("Result:")} ${this.result}`);
         }
 
         this.trigger("new-result");
@@ -684,14 +685,14 @@ export class StackRoller extends RenderableRoller<number> {
                         if (b.doubles) {
                             this.stunted = ` - ${
                                 b.results.get(0).value
-                            } Stunt Points`;
+                            } ${t("Stunt Points")}`;
                         }
                     }
                     if (a instanceof StuntRoller) {
                         if (a.doubles) {
                             this.stunted = ` - ${
                                 a.results.get(0).value
-                            } Stunt Points`;
+                            } ${t("Stunt Points")}`;
                         }
                     }
                     const result = this.operators[dice.value](
@@ -734,7 +735,7 @@ export class StackRoller extends RenderableRoller<number> {
         this.max = this.maxStack.pop();
         if (final instanceof StuntRoller) {
             if (final.doubles) {
-                this.stunted = ` - ${final.stunt.result} Stunt Points`;
+                this.stunted = ` - ${final.stunt.result} ${t("Stunt Points")}`;
             }
         }
         this.result = final.result;

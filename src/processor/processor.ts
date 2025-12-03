@@ -10,6 +10,7 @@ import {
 import type { BasicRoller } from "../rollers/roller";
 import type DiceRollerPlugin from "src/main";
 import { StackRoller } from "src/rollers/dice/stack";
+import { t } from "src/utils/i18n";
 import { isTemplateFolder } from "src/utils/util";
 import type { DiceRollerSettings } from "src/settings/settings.types";
 import { API } from "src/api/api";
@@ -25,7 +26,7 @@ export default class DiceProcessor extends Component {
 
         plugin.addCommand({
             id: "reroll",
-            name: "Re-roll Dice",
+            name: t("Re-roll Dice"),
             checkCallback: (checking) => {
                 const view =
                     this.app.workspace.getActiveViewOfType(MarkdownView);
@@ -104,7 +105,7 @@ export default class DiceProcessor extends Component {
                 const replacer = await roller.getReplacer();
                 if (!replacer) {
                     new Notice(
-                        "Dice Roller: There was an issue modifying the file."
+                        t("Dice Roller: There was an issue modifying the file.")
                     );
                     return;
                 }
@@ -186,7 +187,7 @@ export default class DiceProcessor extends Component {
             } catch (e) {
                 console.error(e);
                 new Notice(
-                    `There was an error parsing the dice string: ${node.innerText}.\n\n${e}`,
+                    `${t("There was an error parsing the dice string:")} ${node.innerText}.\n\n${e}`,
                     5000
                 );
                 continue;
