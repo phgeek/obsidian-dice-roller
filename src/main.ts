@@ -19,7 +19,7 @@ import { DataviewManager } from "./api/api.dataview";
 import DiceProcessor from "./processor/processor";
 import copy from "fast-copy";
 import { compare } from "compare-versions";
-import { initI18n } from "./utils/i18n";
+import { initI18n, t } from "./utils/i18n";
 
 export default class DiceRollerPlugin extends Plugin {
     api = API;
@@ -42,7 +42,7 @@ export default class DiceRollerPlugin extends Plugin {
         initI18n();
 
         await this.loadSettings();
-        console.log(`DiceRoller v${this.data.version} loaded`);
+        console.log(`${t("DiceRoller v%d loaded").replace("%d", this.data.version)}`);
 
         DiceRenderer.setData(this.getRendererData());
 
@@ -68,18 +68,18 @@ export default class DiceRollerPlugin extends Plugin {
                     return;
                 }
                 if (!(roller instanceof StackRoller)) {
-                    new Notice("The Dice View only supports dice rolls.");
+                    new Notice(t("The Dice View only supports dice rolls."));
                     return;
                 }
                 await roller.roll();
                 if (!roller.children.length) {
-                    new Notice("Invalid formula.");
+                    new Notice(t("Invalid formula."));
                     return;
                 }
                 try {
                     await roller.roll(true);
                 } catch (e) {
-                    new Notice("There was an error rendering the roll.");
+                    new Notice(t("There was an error rendering the roll."));
                     console.error(e);
                 }
 
@@ -92,7 +92,7 @@ export default class DiceRollerPlugin extends Plugin {
 
         this.addCommand({
             id: "open-view",
-            name: "Open Dice View",
+            name: t("Open Dice View"),
             callback: () => {
                 if (!this.view) {
                     this.addDiceView();
@@ -177,13 +177,13 @@ export default class DiceRollerPlugin extends Plugin {
      */
     async getArrayRoller(options: any[], rolls = 1) {
         new Notice(
-            "Using the Dice Roller plugin directly will be deprecated in a future version. Please use `window.DiceRoller` instead."
+            t("Using the Dice Roller plugin directly will be deprecated in a future version. Please use `window.DiceRoller` instead.")
         );
         return this.api.getArrayRoller(options, rolls);
     }
 
     onunload() {
-        console.log("DiceRoller unloaded");
+        console.log(t("DiceRoller unloaded"));
         this.app.workspace
             .getLeavesOfType(VIEW_TYPE)
             .forEach((leaf) => leaf.detach());
